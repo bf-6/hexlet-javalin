@@ -29,6 +29,8 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("net.datafaker:datafaker:2.0.1")
+    implementation("org.apache.commons:commons-text:1.11.0")
+
 }
 
 tasks.test {

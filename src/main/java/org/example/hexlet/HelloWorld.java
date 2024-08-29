@@ -3,6 +3,7 @@ package org.example.hexlet;
 import io.javalin.Javalin;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
+import org.apache.commons.text.StringEscapeUtils;
 import org.example.hexlet.dto.courses.CoursePage;
 import org.example.hexlet.dto.courses.CoursesPage;
 import org.example.hexlet.model.Course;
@@ -32,6 +33,13 @@ public class HelloWorld {
             var userId = ctx.pathParam("id");
             var postId =  ctx.pathParam("postId");
             ctx.result("User ID: " + userId + " Post ID: " + postId);
+        });
+
+        app.get("/users/{id}", ctx -> {
+            var id = ctx.pathParam("id");
+            var escapedId = StringEscapeUtils.escapeHtml4(id);
+            ctx.contentType("text/html");
+            ctx.result("User ID: " + escapedId);
         });
 
         app.get("/courses", ctx -> {
