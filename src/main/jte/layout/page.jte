@@ -1,7 +1,6 @@
 @import gg.jte.Content
 @param Content content
 
-<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -15,10 +14,9 @@
     <a href="/">Main</a>
     <a href="/courses">Courses</a>
 </p>
-<p>COURSES:
-</p>
+<p>COURSES:</p>
 ${content}
-<footer style="color: red; font-size: 10px;">
+<footer style="color: red; font-size: 14px;">
     <br>
     <hr>
     Курсы

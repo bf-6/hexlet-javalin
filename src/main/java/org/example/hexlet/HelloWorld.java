@@ -43,8 +43,25 @@ public class HelloWorld {
         });
 
         app.get("/courses", ctx -> {
-            var coursesPage = new CoursesPage(COURSES);
-            ctx.render("courses/index.jte", Collections.singletonMap("page", coursesPage));
+            var term = ctx.queryParam("term");
+            List<Course> courses;
+
+            if (term != null) {
+                courses = COURSES.stream()
+                        .filter(course -> course.getName().equals(term) || course.getDescription().contains(term))
+                        .toList();
+            } else {
+                courses = COURSES;
+            }
+
+            /*if (term != null) {
+                courses = COURSES.stream()
+                        .filter(course -> course.getDescription().contains(term))
+                        .toList();
+            } else courses = COURSES;*/
+
+            var page = new CoursesPage(courses, term);
+            ctx.render("courses/index.jte", Collections.singletonMap("page", page));
         });
 
         app.get("/courses/{id}", ctx -> {
