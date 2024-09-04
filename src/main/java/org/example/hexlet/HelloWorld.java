@@ -3,9 +3,11 @@ package org.example.hexlet;
 import io.javalin.Javalin;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
+import io.javalin.validation.ValidationException;
 import org.apache.commons.text.StringEscapeUtils;
 import org.example.hexlet.dto.courses.CoursePage;
 import org.example.hexlet.dto.courses.CoursesPage;
+import org.example.hexlet.dto.users.BuildUserPage;
 import org.example.hexlet.dto.users.UsersPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.model.User;
@@ -40,32 +42,46 @@ public class HelloWorld {
             ctx.render("users/index.jte", model("page", page));
         });
 
-        app.get("/users/{id}/post/{postId}", ctx -> {
+        /*app.get("/users/{id}/post/{postId}", ctx -> {
             var userId = ctx.pathParam("id");
             var postId =  ctx.pathParam("postId");
             ctx.result("User ID: " + userId + " Post ID: " + postId);
-        });
+        });*/
 
         app.get("/users/build", ctx -> {
-            ctx.render("users/build.jte");
+            var page = new BuildUserPage();
+            ctx.render("users/build.jte", model("page", page));
         });
 
-        app.get("/users/{id}", ctx -> {
+        /*app.get("/users/{id}", ctx -> {
             var id = ctx.pathParam("id");
             var escapedId = StringEscapeUtils.escapeHtml4(id);
             ctx.contentType("text/html");
             ctx.result("User ID: " + escapedId);
-        });
+        });*/
 
         app.post("/users", ctx -> {
             var name = ctx.formParam("name");
             var email = ctx.formParam("email").trim().toLowerCase();
-            var password = ctx.formParam("password");
+
+            try {
+                var passwordConfirmation = ctx.formParam("passwordConfirmation");
+                var password = ctx.formParamAsClass("password", String.class)
+                        .check(value -> value.equals(passwordConfirmation), "Пароли не совпадают")
+                        .get();
+                var user = new User(name, email, password);
+                UserRepository.save(user);
+                ctx.redirect("/users");
+            } catch (ValidationException e) {
+                var page = new BuildUserPage(name, email, e.getErrors());
+                ctx.render("users/build.jte", model("page", page));
+            }
+            /*var password = ctx.formParam("password");
             var passwordConfirmation = ctx.formParam("passwordConfirmation");
 
             var user = new User(name, email, password);
             UserRepository.save(user);
-            ctx.redirect("/users");
+            ctx.redirect("/users");*/
         });
 
         app.get("/courses", ctx -> {
