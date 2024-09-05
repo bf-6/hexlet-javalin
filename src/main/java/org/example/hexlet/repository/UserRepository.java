@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class UserRepository {
+
     private static List<User> entities = new ArrayList<User>();
 
     public static void save(User user) {
@@ -26,10 +27,6 @@ public class UserRepository {
                 .filter(entity -> entity.getId() == id)
                 .findAny();
         return maybeUser;
-    }
-
-    public static void delete(Long id) {
-
     }
 
     public static List<User> getEntities() {

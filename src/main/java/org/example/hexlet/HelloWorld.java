@@ -5,12 +5,14 @@ import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 import io.javalin.validation.ValidationException;
 import org.apache.commons.text.StringEscapeUtils;
+import org.example.hexlet.dto.courses.BuildCoursePage;
 import org.example.hexlet.dto.courses.CoursePage;
 import org.example.hexlet.dto.courses.CoursesPage;
 import org.example.hexlet.dto.users.BuildUserPage;
 import org.example.hexlet.dto.users.UsersPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.model.User;
+import org.example.hexlet.repository.CourseRepository;
 import org.example.hexlet.repository.UserRepository;
 
 import java.util.Collections;
@@ -42,23 +44,10 @@ public class HelloWorld {
             ctx.render("users/index.jte", model("page", page));
         });
 
-        /*app.get("/users/{id}/post/{postId}", ctx -> {
-            var userId = ctx.pathParam("id");
-            var postId =  ctx.pathParam("postId");
-            ctx.result("User ID: " + userId + " Post ID: " + postId);
-        });*/
-
         app.get("/users/build", ctx -> {
             var page = new BuildUserPage();
             ctx.render("users/build.jte", model("page", page));
         });
-
-        /*app.get("/users/{id}", ctx -> {
-            var id = ctx.pathParam("id");
-            var escapedId = StringEscapeUtils.escapeHtml4(id);
-            ctx.contentType("text/html");
-            ctx.result("User ID: " + escapedId);
-        });*/
 
         app.post("/users", ctx -> {
             var name = ctx.formParam("name");
@@ -76,15 +65,44 @@ public class HelloWorld {
                 var page = new BuildUserPage(name, email, e.getErrors());
                 ctx.render("users/build.jte", model("page", page));
             }
-            /*var password = ctx.formParam("password");
-            var passwordConfirmation = ctx.formParam("passwordConfirmation");
 
-            var user = new User(name, email, password);
-            UserRepository.save(user);
-            ctx.redirect("/users");*/
         });
 
         app.get("/courses", ctx -> {
+            var term = ctx.queryParam("term");
+            var courses = CourseRepository.getEntities();
+            var page = new CoursesPage(courses, term);
+            ctx.render("courses/index.jte", model("page", page));
+        });
+
+        app.get("/courses/build", ctx -> {
+            var page = new BuildCoursePage();
+            ctx.render("courses/build.jte", model("page", page));
+        });
+
+        app.post("/courses", ctx -> {
+
+            var name = ctx.formParam("name");
+            var description = ctx.formParam("description");
+
+            try {
+                name = ctx.formParamAsClass("name", String.class)
+                        .check(value -> value.length() > 2, "Название не должно быть короче двух символов")
+                        .get();
+                description = ctx.formParamAsClass("description", String.class)
+                        .check(value -> value.length() > 10, "Описание должно быть не короче 10 символов")
+                        .get();
+                var course = new Course(name, description);
+                CourseRepository.save(course);
+                ctx.redirect("/courses");
+            } catch (ValidationException e) {
+                var page = new BuildCoursePage(name, description, e.getErrors());
+                ctx.render("courses/build.jte", Collections.singletonMap("page", page));
+            }
+
+        });
+
+        /*app.get("/courses", ctx -> {
             var term = ctx.queryParam("term");
             List<Course> courses;
 
@@ -99,9 +117,9 @@ public class HelloWorld {
             var page = new CoursesPage(courses, term);
             ctx.render("courses/index.jte", Collections.singletonMap("page", page));
 
-        });
+        });*/
 
-        app.get("/courses/{id}", ctx -> {
+        /*app.get("/courses/{id}", ctx -> {
             var id = ctx.pathParam("id");
 
             var c = COURSES.stream()
@@ -117,7 +135,7 @@ public class HelloWorld {
             ctx.render("courses/show.jte", Collections.singletonMap("course", course));
 
         });
-
+*/
         app.start(7070); // Стартуем веб-сервер
     }
 }
