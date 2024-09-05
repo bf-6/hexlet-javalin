@@ -1,4 +1,5 @@
-@import org.example.hexlet.dto.users.UsersPage;
+@import org.example.hexlet.dto.users.UsersPage
+@import org.example.hexlet.util.NamedRoutes;
 @param UsersPage page
 
     <html>
@@ -13,7 +14,7 @@
     @else
         @for(var user : page.getUsers())
             <div>
-                <h2><a href="/users">${user.getName()}</a> ${user.getEmail()}</h2>
+                <h2><a href="${NamedRoutes.usersPath()}">${user.getName()}</a> ${user.getEmail()}</h2>
             </div>
         @endfor
     @endif

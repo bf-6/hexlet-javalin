@@ -1,4 +1,5 @@
 @import gg.jte.Content
+@import org.example.hexlet.util.NamedRoutes
 @param Content content
 
 <html lang="en">
@@ -12,7 +13,7 @@
 <body>
 <p>
     <a href="/">Main</a>
-    <a href="/courses">Courses</a>
+    <a href="${NamedRoutes.coursesPath()}">Courses</a>
 </p>
 <p>COURSES:</p>
 ${content}
