@@ -74,7 +74,6 @@ public class HelloWorld {
         app.post(NamedRoutes.usersPath(), ctx -> {
             var name = ctx.formParam("name");
             var email = ctx.formParam("email").trim().toLowerCase();
-
             try {
                 var passwordConfirmation = ctx.formParam("passwordConfirmation");
                 var password = ctx.formParamAsClass("password", String.class)
@@ -94,6 +93,7 @@ public class HelloWorld {
             var term = ctx.queryParam("term");
             var courses = CourseRepository.getEntities();
             var page = new CoursesPage(courses, term);
+            page.setFlash(ctx.consumeSessionAttribute("flash"));
             ctx.render("courses/index.jte", model("page", page));
         });
 
@@ -116,6 +116,7 @@ public class HelloWorld {
                         .get();
                 var course = new Course(name, description);
                 CourseRepository.save(course);
+                ctx.sessionAttribute("flash", "Course has been created!");
                 ctx.redirect("/courses");
             } catch (ValidationException e) {
                 var page = new BuildCoursePage(name, description, e.getErrors());
