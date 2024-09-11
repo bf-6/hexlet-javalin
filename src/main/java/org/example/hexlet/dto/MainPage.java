@@ -8,6 +8,7 @@ import lombok.Getter;
 public class MainPage {
 
     private boolean visited;
+    private String currentUser;
 
     public Boolean isVisited() {
         return visited;

@@ -5,6 +5,7 @@ import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 import io.javalin.validation.ValidationException;
 import org.apache.commons.text.StringEscapeUtils;
+import org.example.hexlet.controller.SessionsController;
 import org.example.hexlet.controller.UsersController;
 import org.example.hexlet.dto.MainPage;
 import org.example.hexlet.dto.courses.BuildCoursePage;
@@ -19,13 +20,10 @@ import org.example.hexlet.repository.UserRepository;
 import org.example.hexlet.util.NamedRoutes;
 
 import java.util.Collections;
-import java.util.List;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
 public class HelloWorld {
-
-    //private static final List<Course> COURSES = Data.getCourses();
 
     public static void main(String[] args) {
         // Создаем приложение
@@ -37,7 +35,7 @@ public class HelloWorld {
         // Описываем, что загрузится по адресу /
         app.get("/", ctx -> {
             var visited = Boolean.valueOf(ctx.cookie("visited"));
-            var page = new MainPage(visited);
+            var page = new MainPage(visited, ctx.sessionAttribute("currentUser"));
             ctx.render("index.jte", model("page", page));
             ctx.cookie("visited", String.valueOf(true));
         });
@@ -46,6 +44,13 @@ public class HelloWorld {
             var page = ctx.queryParamAsClass("name", String.class).getOrDefault("World");
             ctx.result("Hello, " + page + "!");
         });
+
+        // Отображение формы логина
+        app.get("/sessions/build", SessionsController::build);
+        // Процесс логина
+        app.post("/sessions", SessionsController::create);
+        // Процесс выхода из аккаунта
+        app.delete("/sessions", SessionsController::destroy);
 
         /*app.get("/users", UsersController::index);
         app.get("/users/{id}", UsersController::show);
