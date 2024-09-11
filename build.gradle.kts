@@ -30,7 +30,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("net.datafaker:datafaker:2.0.1")
     implementation("org.apache.commons:commons-text:1.11.0")
-
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
 }
 
 tasks.test {

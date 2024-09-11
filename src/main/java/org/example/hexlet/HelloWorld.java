@@ -5,6 +5,8 @@ import io.javalin.http.NotFoundResponse;
 import io.javalin.rendering.template.JavalinJte;
 import io.javalin.validation.ValidationException;
 import org.apache.commons.text.StringEscapeUtils;
+import org.example.hexlet.controller.UsersController;
+import org.example.hexlet.dto.MainPage;
 import org.example.hexlet.dto.courses.BuildCoursePage;
 import org.example.hexlet.dto.courses.CoursePage;
 import org.example.hexlet.dto.courses.CoursesPage;
@@ -23,7 +25,7 @@ import static io.javalin.rendering.template.TemplateUtil.model;
 
 public class HelloWorld {
 
-    private static final List<Course> COURSES = Data.getCourses();
+    //private static final List<Course> COURSES = Data.getCourses();
 
     public static void main(String[] args) {
         // Создаем приложение
@@ -33,11 +35,25 @@ public class HelloWorld {
         });
 
         // Описываем, что загрузится по адресу /
-        app.get("/", ctx -> ctx.result("Hello World!"));
+        app.get("/", ctx -> {
+            var visited = Boolean.valueOf(ctx.cookie("visited"));
+            var page = new MainPage(visited);
+            ctx.render("index.jte", model("page", page));
+            ctx.cookie("visited", String.valueOf(true));
+        });
+
         app.get("/hello", ctx -> {
             var page = ctx.queryParamAsClass("name", String.class).getOrDefault("World");
             ctx.result("Hello, " + page + "!");
         });
+
+        /*app.get("/users", UsersController::index);
+        app.get("/users/{id}", UsersController::show);
+        app.get("/users/build", UsersController::build);
+        app.post("/users", UsersController::create);
+        app.get("/users/{id}/edit", UsersController::edit);
+        app.patch("/users/{id}", UsersController::update);
+        app.delete("/users/{id}", UsersController::destroy);*/
 
         app.get(NamedRoutes.usersPath(), ctx -> {
             var users = UserRepository.getEntities();

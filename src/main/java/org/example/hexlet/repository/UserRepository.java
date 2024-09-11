@@ -1,5 +1,6 @@
 package org.example.hexlet.repository;
 
+import lombok.Getter;
 import org.example.hexlet.model.User;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.Optional;
 
 public class UserRepository {
 
+    @Getter
     private static List<User> entities = new ArrayList<User>();
 
     public static void save(User user) {
@@ -29,8 +31,8 @@ public class UserRepository {
         return maybeUser;
     }
 
-    public static List<User> getEntities() {
-        return entities;
+    public static void delete(Long id) {
+
     }
 
 }
